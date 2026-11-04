@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payment Reconciliation Lab</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">≋</span><span>payledger<span class="brand-light">/lab</span></span></div>
+      <span class="demo-badge"><span class="dot"></span> LOCAL DEMO DATA</span>
+    </header>
+
+    <main>
+      <div class="hero">
+        <div>
+          <p class="eyebrow">PAYMENT OPERATIONS / RECONCILIATION</p>
+          <h1>Every rupee accounted for.</h1>
+          <p class="lede">Match orders, captured payments, refunds, and settlements. Investigate the exceptions before they reach a merchant statement.</p>
+        </div>
+        <div class="actions">
+          <button id="resolve" class="button primary" type="button">Resolve late payout</button>
+          <button id="reset" class="button secondary" type="button">Reset demo</button>
+        </div>
+      </div>
+
+      <section class="metrics" aria-label="Reconciliation metrics">
+        <article class="metric"><span>ORDERS REVIEWED</span><strong id="orders">—</strong><small>Across six demo merchants</small></article>
+        <article class="metric"><span>MATCHED</span><strong id="matched">—</strong><small id="match-rate">—</small></article>
+        <article class="metric alert"><span>EXCEPTIONS</span><strong id="exceptions">—</strong><small>Require investigation</small></article>
+        <article class="metric"><span>NET SETTLED</span><strong id="settled">—</strong><small>After refunds</small></article>
+      </section>
+
+      <div class="grid">
+        <section class="panel coverage">
+          <div class="panel-heading"><div><p class="eyebrow">CONTROL CHECK</p><h2>Settlement coverage</h2></div><span id="coverage-value">—</span></div>
+          <div class="progress"><div id="coverage-bar"></div></div>
+          <div class="legend"><span><i class="legend-green"></i> Matched orders</span><span><i class="legend-amber"></i> Open exceptions</span></div>
+          <p class="panel-note">One order includes a partial refund. Expected settlement is captured funds minus refunds. The exception register explains each gap.</p>
+        </section>
+        <section class="panel workflow">
+          <div class="panel-heading"><div><p class="eyebrow">INVESTIGATION WORKFLOW</p><h2>Preview a repair</h2></div></div>
+          <ol>
+            <li>Open an exception to review its evidence and suggested next step.</li>
+            <li>For a settlement shortfall, preview the result with no database change.</li>
+            <li>Record a demo settlement only after reviewing the preview.</li>
+          </ol>
+        </section>
+      </div>
+
+      <section class="panel table-panel">
+        <div class="table-header">
+          <div><p class="eyebrow">TRANSACTION REGISTER</p><h2>Order-level reconciliation</h2></div>
+          <div class="filters">
+            <label class="sr-only" for="search">Search merchant or order</label>
+            <input id="search" type="search" placeholder="Search orders...">
+            <label class="sr-only" for="status-filter">Filter by status</label>
+            <select id="status-filter"><option value="ALL">All statuses</option><option value="EXCEPTIONS">Exceptions only</option><option value="MATCHED">Matched only</option></select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>ORDER / MERCHANT</th><th>EXPECTED</th><th>CAPTURED</th><th>REFUNDED</th><th>SETTLED</th><th>RESULT</th><th>REVIEW</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <p id="empty" class="empty" hidden>No orders match these filters.</p>
+      </section>
+      <section id="investigation" class="panel investigation" aria-live="polite" hidden>
+        <div class="panel-heading"><div><p class="eyebrow">EXPLAINABLE RECONCILIATION</p><h2 id="investigation-title">Investigation</h2></div><span id="priority" class="priority"></span></div>
+        <div class="investigation-grid">
+          <div><span class="field-label">WHY IT WAS FLAGGED</span><p id="reason"></p></div>
+          <div><span class="field-label">SUGGESTED NEXT STEP</span><p id="next-step"></p></div>
+          <div><span class="field-label">AMOUNT TO INVESTIGATE</span><strong id="impact"></strong><small>Indicator only; it is not a booked loss.</small></div>
+        </div>
+        <div id="preview-controls" class="preview-controls" hidden>
+          <button id="preview-button" class="button secondary" type="button">Preview settlement</button>
+          <span>Simulation runs inside a SQLite transaction and rolls back.</span>
+        </div>
+        <div id="preview-result" class="preview-result" hidden>
+          <p id="preview-copy"></p>
+          <button id="apply-button" class="button primary" type="button">Record demo settlement</button>
+          <small>Demo action only. Verify a real payout with your gateway or bank first.</small>
+        </div>
+        <p id="investigation-error" class="error" role="alert" hidden></p>
+      </section>
+      <footer>Built with Node.js, SQLite, signed webhooks, and deterministic sample transactions. No real payments are processed.</footer>
+    </main>
+  </div>
+</body>
+</html>
